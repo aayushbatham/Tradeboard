@@ -15,21 +15,14 @@ const columns = [
   {
     id: "up",
     label: "Up",
-    minWidth: 10,
-    align: "center",
+    minWidth: 30,
+    align: "left",
     format: (value) =>
-      value ? <ChevronUp color="green" /> : <ChevronDown color="red" />,
+      value ? <ChevronUp color="#820000" /> : <ChevronDown color="#118826" />,
   },
   { id: "rank", label: "Rank", minWidth: 50 },
   { id: "username", label: "Username", minWidth: 150 },
-  {
-    id: "totalTradingVolume",
-    label: "Total Volume Traded",
-    minWidth: 150,
-    align: "left",
-    format: (value) =>
-      value.toLocaleString("en-US", { style: "currency", currency: "USD" }),
-  },
+
   {
     id: "averageWinRate",
     label: "Average Win Rate (%)",
@@ -43,6 +36,14 @@ const columns = [
     minWidth: 150,
     align: "left",
     format: (value) => value.toFixed(2),
+  },
+  {
+    id: "totalTradingVolume",
+    label: "Total Volume Traded",
+    minWidth: 150,
+    align: "left",
+    format: (value) =>
+      value.toLocaleString("en-US", { style: "currency", currency: "USD" }),
   },
 ];
 
@@ -67,13 +68,32 @@ export default function TradingVolumeTable() {
     page * rowsPerPage
   );
 
+  const getRowColor = (rank) => {
+    switch (rank) {
+      case 1:
+        return "#FEEFAD"; // Gold for 1st
+      case 2:
+        return "#C9FCE5"; // Silver for 2nd
+      case 3:
+        return "#EBFECA"; // Bronze for 3rd
+      default:
+        return "transparent";
+    }
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ height: "100%" }}>
+      <TableContainer
+        sx={{ height: "100%", borderRadius: "15px", overflow: "hidden" }}
+      >
         <Table
           stickyHeader
           aria-label="trading volume table"
-          sx={{ tableLayout: "fixed" }}
+          sx={{
+            tableLayout: "auto",
+            borderCollapse: "separate", // Ensure border-spacing applies
+            borderSpacing: "0 15px", // Vertical spacing between rows
+          }}
         >
           <TableHead>
             <TableRow>
@@ -83,13 +103,14 @@ export default function TradingVolumeTable() {
                   align={column.align}
                   style={{ width: column.minWidth }}
                   sx={{
-                    color: "black",
+                    color: "#272932",
                     fontWeight: "bold",
                     backgroundColor: "transparent",
-                    color: "#333",
-                    border: "none", // Remove bottom border
-                    padding: "8px",
+                    border: "none", // Border for table headers
+                    padding: "15px",
+                    textTransform: "uppercase",
                     textAlign: column.align,
+                    fontSize: "16px", // Font size for header cells
                   }}
                 >
                   {column.label}
@@ -99,11 +120,31 @@ export default function TradingVolumeTable() {
           </TableHead>
           <TableBody>
             {paginatedData.map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.rank}>
+              <TableRow
+                hover
+                role="checkbox"
+                tabIndex={-1}
+                key={row.rank}
+                sx={{
+                  backgroundColor: getRowColor(row.rank),
+                  borderBottom: "none", // Remove row borders
+                  borderRadius: "20px",
+                }}
+              >
                 {columns.map((column) => {
                   const value = row[column.id];
                   return (
-                    <TableCell key={column.id} align={column.align}>
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      sx={{
+                        backgroundColor: getRowColor(row.rank),
+                        border: "none", // Remove cell borders
+                        padding: "15px", // Padding within the cells
+                        fontSize: "20px", // Font size for cell text
+                        lineHeight: "45px",
+                      }}
+                    >
                       {column.format ? column.format(value) : value}
                     </TableCell>
                   );
