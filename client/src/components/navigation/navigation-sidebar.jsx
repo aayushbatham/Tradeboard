@@ -19,6 +19,9 @@ const sidebarItems = [
   { id: "wallet", name: "Wallets" },
   { id: "subscription", name: "Subscription" },
   { id: "referral", name: "Referral Program" },
+];
+
+const sidebarItems2 = [
   { id: "settings", name: "Settings" },
   { id: "logout", name: "Logout" },
 ];
@@ -79,7 +82,44 @@ export const NavigationSidebar = () => {
           </div>
         </button>
       ))}
-      <Separator.Root />
+
+      {/* Separator */}
+      <div className="w-full">
+        <Separator.Root className="my-4 border-[1px] border-gray-300 w-full ml-5" />
+      </div>
+
+      {sidebarItems2.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => handleClick(item.id)}
+          className={clsx(
+            "relative flex items-center p-3 pt-4 mb-4 ml-2 mr-2 rounded-md transition-colors hover:bg-[#FF9141] hover:text-white group",
+            currentPath === item.id && "bg-[#FF9141] text-white"
+          )}
+        >
+          {/* Indicator bar for selected state */}
+          <div
+            className={clsx(
+              "absolute left-0 top-0 h-full -ml-7 bg-[#FF9141] rounded-r-full transition-all",
+              currentPath === item.id
+                ? "w-[5px] transform scale-y-100"
+                : "w-0 transform scale-y-0",
+              "transition-transform duration-300 ease-in-out"
+            )}
+          />
+
+          {/* Item name */}
+          <div
+            className={clsx(
+              "ml-2 text-gray-800 group-hover:text-white flex gap-x-2",
+              currentPath === item.id && "text-white"
+            )}
+          >
+            <div className="mr-2">{iconMap[item.id]}</div>
+            <div>{item.name}</div>
+          </div>
+        </button>
+      ))}
     </div>
   );
 };

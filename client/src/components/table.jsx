@@ -9,38 +9,48 @@ import TableRow from "@mui/material/TableRow";
 import Pagination from "@mui/material/Pagination";
 import { mock_data_temp } from "/src/montly_mock_data.js";
 import { ChevronUp, ChevronDown } from "lucide-react";
-
+import Avatar from "@mui/material/Avatar";
 // Define columns based on mock_data structure
 const columns = [
   {
     id: "up",
-    label: "Up",
+    label: (
+      <div className="flex flex-col -inset-1 space-y-0 relative">
+        <div className="absolute -top-4">
+          {" "}
+          <ChevronUp color="#118826" />
+        </div>
+        <div className="absolute -top-1">
+          <ChevronDown color="#820000" />
+        </div>
+      </div>
+    ),
     minWidth: 30,
     align: "left",
     format: (value) =>
-      value ? <ChevronUp color="#820000" /> : <ChevronDown color="#118826" />,
+      value ? <ChevronUp color="#118826" /> : <ChevronDown color="#820000" />,
   },
-  { id: "rank", label: "Rank", minWidth: 50 },
-  { id: "username", label: "Username", minWidth: 150 },
+  { id: "rank", label: "Rank", minWidth: 90, align: "center" },
+  { id: "username", label: "Username", minWidth: 220 },
 
   {
     id: "averageWinRate",
     label: "Average Win Rate (%)",
-    minWidth: 150,
+    minWidth: 165,
     align: "left",
     format: (value) => value.toFixed(2),
   },
   {
     id: "averageROI",
     label: "Average ROI (%)",
-    minWidth: 150,
+    minWidth: 170,
     align: "left",
     format: (value) => value.toFixed(2),
   },
   {
     id: "totalTradingVolume",
     label: "Total Volume Traded",
-    minWidth: 150,
+    minWidth: 190,
     align: "left",
     format: (value) =>
       value.toLocaleString("en-US", { style: "currency", currency: "USD" }),
@@ -48,9 +58,9 @@ const columns = [
 ];
 
 // Mock data
-export const mock_data = mock_data_temp;
+const mock_data = mock_data_temp;
 
-export default function TradingVolumeTable() {
+export default function TradingVolumeTable({ select }) {
   const [page, setPage] = React.useState(1); // Start from 1
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -68,6 +78,8 @@ export default function TradingVolumeTable() {
     page * rowsPerPage
   );
 
+  const formatRank = (rank) => (rank < 10 ? `0${rank}` : rank);
+
   const getRowColor = (rank) => {
     switch (rank) {
       case 1:
@@ -82,9 +94,13 @@ export default function TradingVolumeTable() {
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    <>
       <TableContainer
-        sx={{ height: "100%", borderRadius: "15px", overflow: "hidden" }}
+        sx={{
+          height: "100%",
+          borderRadius: "15px",
+          overflow: "hidden",
+        }}
       >
         <Table
           stickyHeader
@@ -127,25 +143,55 @@ export default function TradingVolumeTable() {
                 key={row.rank}
                 sx={{
                   backgroundColor: getRowColor(row.rank),
-                  borderBottom: "none", // Remove row borders
+                  borderTop: "2px solid gray", // Top border
+                  borderLeft: "2px solid gray", // Left border
+                  borderRight: "2px solid gray", // Right border
+                  borderBottom: "none", // Optional: remove bottom border if not needed
                   borderRadius: "20px",
                 }}
               >
                 {columns.map((column) => {
-                  const value = row[column.id];
+                  const value =
+                    column.id === "rank"
+                      ? formatRank(row[column.id])
+                      : row[column.id];
                   return (
                     <TableCell
                       key={column.id}
                       align={column.align}
                       sx={{
                         backgroundColor: getRowColor(row.rank),
-                        border: "none", // Remove cell borders
-                        padding: "15px", // Padding within the cells
-                        fontSize: "20px", // Font size for cell text
+                        padding: "15px",
+                        fontSize: "20px",
                         lineHeight: "45px",
                       }}
                     >
-                      {column.format ? column.format(value) : value}
+                      {column.id === "username" ? (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div
+                            className={`border-gray-500 border-2 rounded-full ${getRowColor(
+                              row.rank
+                            )}`}
+                          >
+                            <Avatar
+                              alt={row.username}
+                              src={`https://i.pravatar.cc/150?u=${row.username}`}
+                              sx={{
+                                border: `3px solid ${getRowColor(row.rank)}`,
+                                borderRadius: "50%",
+                                width: 40,
+                                height: 40,
+                                backgroundColor: "#fff",
+                              }}
+                            />
+                          </div>
+                          <span style={{ marginLeft: 10 }}>{row.username}</span>
+                        </div>
+                      ) : column.format ? (
+                        column.format(value)
+                      ) : (
+                        value
+                      )}
                     </TableCell>
                   );
                 })}
@@ -172,6 +218,6 @@ export default function TradingVolumeTable() {
           },
         }}
       />
-    </Paper>
+    </>
   );
 }
