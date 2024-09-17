@@ -90,7 +90,7 @@ export default function TradingVolumeTable() {
           stickyHeader
           aria-label="trading volume table"
           sx={{
-            tableLayout: "auto",
+            tableLayout: "fixed",
             borderCollapse: "separate", // Ensure border-spacing applies
             borderSpacing: "0 15px", // Vertical spacing between rows
           }}
